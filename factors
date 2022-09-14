@@ -1,10 +1,14 @@
-#!/usr/bin/env bash
-# read from file given as argv[1] ($1) and print factors for each num in file
+#!/bin/bash
 
-FILE=$1
-
-while read NUM
+file=$1
+while read num
 do
-    factors=($(factor $NUM))
-    echo "$NUM=$(($NUM/${factors[1]}))*${factors[1]}"
-done < $FILE
+	factors=($(factor $num))
+	if (($num < 2**63));
+	then
+		div=$((num/factors[1]))
+	else
+		div=$(echo "0 k $num ${factors[1]} / n" | dc)
+	fi;
+	echo "$num=$div*${factors[1]}"
+done < $file
